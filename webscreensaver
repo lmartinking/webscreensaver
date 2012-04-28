@@ -1,0 +1,105 @@
+#!/usr/bin/env python2
+
+# WebScreensaver - Make any web page a screensaver
+
+import os
+import sys
+import random
+
+import gobject
+import gtk
+import webkit
+
+class WebScreensaver(object):
+    def __init__(self, url='http://www.google.com', window_id=None):
+        if window_id:
+            self.window_id = window_id
+        else:
+            self.window_id = None
+
+        self.w = 640
+        self.h = 480
+        self.url = url
+
+    def setup(self):
+        win = None
+
+        if self.window_id:
+            win = gtk.Window(gtk.WINDOW_POPUP)
+            self.gdk_win = gtk.gdk.window_foreign_new(self.window_id)
+
+            x, y, w, h, _ = self.gdk_win.get_geometry()
+
+            win.set_has_window(True)
+            win.set_window(self.gdk_win)
+
+            win.move(x, y)
+            win.set_default_size(w, h)
+            win.set_size_request(w, h)
+
+            win.set_realized(True)
+
+            self.w, self.h = w, h
+        else:
+            win = gtk.Window()
+            win.set_default_size(self.w, self.h)
+
+        win.connect('destroy', gtk.main_quit)
+
+        browser = webkit.WebView()
+
+        if self.w < 320 and self.h < 240:
+             browser.set_full_content_zoom(True)
+             browser.set_zoom_level(0.4)
+             pass
+
+        browser.set_size_request(self.w, self.h)
+        browser.open(self.url)
+
+        sw = gtk.Layout()
+        sw.put(browser, 0, 0)
+
+        win.add(sw)
+        win.show_all()
+
+        self.browser = browser
+        self.win = win
+
+def determine_window_id(win_id=None):
+    if not win_id:
+        win_id = os.getenv('XSCREENSAVER_WINDOW')
+
+    if win_id:
+        win_id = long(int(win_id, 16))
+
+    return win_id
+
+FAVOURITES = {
+    'starfield': 'http://www.chiptune.com/starfield/starfield.html',
+    'conductor': 'http://www.mta.me/'
+}
+
+def random_screensaver():
+    return random.choice(FAVOURITES.values())
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description='WebScreensaver')
+    parser.add_argument('-window-id', help='XID of Window to draw on')
+    parser.add_argument('-url', help='URL of page to display')
+    args = parser.parse_args()
+
+    gobject.threads_init()
+
+    if args.url:
+        url = args.url
+    else:
+        url = random_screensaver()
+
+    saver = WebScreensaver(
+        url=url,
+        window_id=determine_window_id(args.window_id),
+    )
+    saver.setup()
+
+    gtk.mainloop()
