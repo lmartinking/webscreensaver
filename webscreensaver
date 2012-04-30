@@ -11,116 +11,125 @@ import gtk
 import webkit
 
 class WebScreensaver(object):
-    def __init__(self, url='http://www.google.com', window_id=None):
-        if window_id:
-            self.window_id = window_id
-        else:
-            self.window_id = None
+	def __init__(self, url='http://www.google.com', window_id=None):
+		if window_id:
+			self.window_id = window_id
+		else:
+			self.window_id = None
 
-        self.w = 640
-        self.h = 480
-        self.url = url
+		self.w = 640
+		self.h = 480
+		self.url = url
 
-    def setup_window(self):
-        win = None
+	def setup_window(self):
+		win = None
 
-        if self.window_id:
-            win = gtk.Window(gtk.WINDOW_POPUP)
-            self.gdk_win = gtk.gdk.window_foreign_new(self.window_id)
+		if self.window_id:
+			win = gtk.Window(gtk.WINDOW_POPUP)
+			self.gdk_win = gtk.gdk.window_foreign_new(self.window_id)
 
-            x, y, w, h, _ = self.gdk_win.get_geometry()
+			x, y, w, h, _ = self.gdk_win.get_geometry()
 
-            win.set_has_window(True)
-            win.set_window(self.gdk_win)
+			win.set_has_window(True)
+			win.set_window(self.gdk_win)
 
-            win.move(x, y)
-            win.set_default_size(w, h)
-            win.set_size_request(w, h)
+			win.move(x, y)
+			win.set_default_size(w, h)
+			win.set_size_request(w, h)
 
-            win.set_realized(True)
+			win.set_realized(True)
 
-            self.w, self.h = w, h
-        else:
-            win = gtk.Window()
-            win.set_default_size(self.w, self.h)
+			self.w, self.h = w, h
+		else:
+			win = gtk.Window()
+			win.set_default_size(self.w, self.h)
 
-        self.win = win
+		self.win = win
 
-    def setup_browser(self):
-        browser = webkit.WebView()
+	def setup_browser(self):
+		browser = webkit.WebView()
 
-        # Enable webgl
-        settings = browser.get_settings()
-        settings.set_property('enable-webgl', True)
+		# Enable webgl
+		settings = browser.get_settings()
+		settings.set_property('enable-webgl', True)
 
-        if self.w < 320 and self.h < 240:
-             browser.set_full_content_zoom(True)
-             browser.set_zoom_level(0.4)
+		if self.w < 320 and self.h < 240:
+			 browser.set_full_content_zoom(True)
+			 browser.set_zoom_level(0.4)
 
-        browser.set_size_request(self.w, self.h)
+		browser.set_size_request(self.w, self.h)
 
-        self.browser = browser
+		self.browser = browser
 
-    def setup_layout(self):
-        sw = gtk.Layout()
-        sw.put(self.browser, 0, 0)
-        self.win.add(sw)
+	def setup_layout(self):
+		sw = gtk.Layout()
+		sw.put(self.browser, 0, 0)
+		self.win.add(sw)
 
-    def setup(self):
-        self.setup_window()
-        self.setup_browser()
-        self.setup_layout()
+	def setup(self):
+		self.setup_window()
+		self.setup_browser()
+		self.setup_layout()
 
-        self.win.connect('destroy', gtk.main_quit)
-        self.win.show_all()
-        self.browser.open(self.url)
+		self.win.connect('destroy', gtk.main_quit)
+		self.win.show_all()
+		self.browser.open(self.url)
 
 def determine_window_id(win_id=None):
-    if not win_id:
-        win_id = os.getenv('XSCREENSAVER_WINDOW')
+	if not win_id:
+		win_id = os.getenv('XSCREENSAVER_WINDOW')
 
-    if win_id:
-        win_id = long(int(win_id, 16))
+	if win_id:
+		win_id = long(int(win_id, 16))
 
-    return win_id
+	return win_id
 
 FAVOURITES = {
-    'starfield':     'http://www.chiptune.com/starfield/starfield.html',
-    'conductor':     'http://www.mta.me/',
-    'reactive-ball': 'http://lab.aerotwist.com/webgl/reactive-ball/',
-    'kinect':        'http://mrdoob.com/lab/javascript/webgl/kinect/',
-    'endless-forest':'http://oos.moxiecode.com/js_webgl/forest/index.html',
-    'cell-shader':   'http://www.ro.me/tech/cel-shader',
-    'hatching-glow': 'http://www.ro.me/tech/hatching-glow-shader',
-    'marbles':       'http://experiments.joshua-perez.com/marbles/',
-    'shadow-map':    'http://alteredqualia.com/three/examples/webgl_shadowmap.html'
+	'starfield':		'http://www.chiptune.com/starfield/starfield.html',
+	'conductor':		'http://www.mta.me/',
+	'reactive-ball':	'http://lab.aerotwist.com/webgl/reactive-ball/',
+	'kinect':			'http://mrdoob.com/lab/javascript/webgl/kinect/',
+	'endless-forest':	'http://oos.moxiecode.com/js_webgl/forest/index.html',
+	'cell-shader':		'http://www.ro.me/tech/cel-shader',
+	'hatching-glow':	'http://www.ro.me/tech/hatching-glow-shader',
+	'marbles':			'http://experiments.joshua-perez.com/marbles/',
+	'shadow-map':		'http://alteredqualia.com/three/examples/webgl_shadowmap.html'
 }
 
+def list_screensavers():
+	for name, url in FAVOURITES.iteritems():
+		print "%15s\t%s" % (name, url)
+
 def determine_screensaver(name=None):
-    if name in FAVOURITES:
-        return FAVOURITES[name]
-    else:
-        return random.choice(FAVOURITES.values())
+	if name in FAVOURITES:
+		return FAVOURITES[name]
+	else:
+		return random.choice(FAVOURITES.values())
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description='WebScreensaver')
-    parser.add_argument('-window-id', help='XID of Window to draw on')
-    parser.add_argument('-url', help='URL of page to display')
-    parser.add_argument('-choose', help='Select a favourite')
-    args = parser.parse_args()
+	import argparse
+	parser = argparse.ArgumentParser(description='WebScreensaver')
+	parser.add_argument('-window-id', help='XID of Window to draw on')
+	parser.add_argument('-url', help='URL of page to display')
+	parser.add_argument('-choose', help='Select a favourite')
+	parser.add_argument('-list', action='store_true', help='List favourites')
+	args = parser.parse_args()
 
-    gobject.threads_init()
+	if args.list:
+		list_screensavers()
+		sys.exit(0)
 
-    if args.url:
-        url = args.url
-    else:
-        url = determine_screensaver(args.choose)
+	gobject.threads_init()
 
-    saver = WebScreensaver(
-        url=url,
-        window_id=determine_window_id(args.window_id),
-    )
-    saver.setup()
+	if args.url:
+		url = args.url
+	else:
+		url = determine_screensaver(args.choose)
 
-    gtk.mainloop()
+	saver = WebScreensaver(
+		url=url,
+		window_id=determine_window_id(args.window_id),
+	)
+	saver.setup()
+
+	gtk.mainloop()
