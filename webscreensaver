@@ -85,33 +85,41 @@ class WebScreensaver(object):
 
 		return win_id
 
-	FAVOURITES = {
-		'starfield':		'http://www.chiptune.com/starfield/starfield.html',
-		'conductor':		'http://www.mta.me/',
-		'reactive-ball':	'http://lab.aerotwist.com/webgl/reactive-ball/',
-		'kinect':			'http://mrdoob.com/lab/javascript/webgl/kinect/',
-		'endless-forest':	'http://oos.moxiecode.com/js_webgl/forest/index.html',
-		'cell-shader':		'http://www.ro.me/tech/cel-shader',
-		'hatching-glow':	'http://www.ro.me/tech/hatching-glow-shader',
-		'marbles':			'http://experiments.joshua-perez.com/marbles/',
-		'shadow-map':		'http://alteredqualia.com/three/examples/webgl_shadowmap.html'
+class WebHacks(object):
+	class Hack(object):
+		__slots__ = "name url script".split(" ")
+
+		def __init__(self, name, url, script=None):
+			self.name, self.url, self.script = name, url, script
+
+	hacks = {
+		Hack('starfield',		'http://www.chiptune.com/starfield/starfield.html'),
+		Hack('conductor',		'http://www.mta.me/'),
+		Hack('reactive-ball',	'http://lab.aerotwist.com/webgl/reactive-ball/'),
+		Hack('kinect',			'http://mrdoob.com/lab/javascript/webgl/kinect/'),
+		Hack('endless-forest',	'http://oos.moxiecode.com/js_webgl/forest/index.html'),
+		Hack('cell-shader',		'http://www.ro.me/tech/cel-shader'),
+		Hack('hatching-glow',	'http://www.ro.me/tech/hatching-glow-shader'),
+		Hack('marbles',			'http://experiments.joshua-perez.com/marbles/'),
+		Hack('shadow-map',		'http://alteredqualia.com/three/examples/webgl_shadowmap.html')
 	}
 
 	@classmethod
-	def list_screensavers(cls):
-		for name, url in cls.FAVOURITES.iteritems():
-			print "%15s\t%s" % (name, url)
+	def print_list(cls):
+		for hack in cls.hacks:
+			print "%15s\t%s" % (hack.name, hack.url)
 
 	@classmethod
 	def determine_screensaver(cls, name=None):
-		if name in cls.FAVOURITES:
-			return cls.FAVOURITES[name]
-		else:
-			return random.choice(cls.FAVOURITES.values())
+		for hack in cls.hacks:
+			if hack.name == name:
+				return hack		
+
+		return random.choice(cls.hacks)
 
 if __name__ == "__main__":
 	import argparse
-	parser = argparse.ArgumentParser(description='WebScreensaver')
+	parser = argparse.ArgumentParser(description='WebScreensaver: Run a web page as your screensaver')
 	parser.add_argument('-window-id', help='XID of Window to draw on')
 	parser.add_argument('-url', help='URL of page to display')
 	parser.add_argument('-choose', help='Select a favourite')
@@ -119,7 +127,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	if args.list:
-		WebScreensaver.list_screensavers()
+		WebHacks.print_list()
 		sys.exit(0)
 
 	gobject.threads_init()
@@ -127,7 +135,7 @@ if __name__ == "__main__":
 	if args.url:
 		url = args.url
 	else:
-		url = WebScreensaver.determine_screensaver(args.choose)
+		url = WebHacks.determine_screensaver(args.choose).url
 
 	saver = WebScreensaver(
 		url=url,
