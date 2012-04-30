@@ -184,7 +184,8 @@ class WebHacks(object):
 		Hack('shadow-map',
 			url='http://alteredqualia.com/three/examples/webgl_shadowmap.html',
 			script=UserScripts.remove_ids("info")
-		)
+		),
+		Hack('gimme-shiny',		url='http://gimmeshiny.com/?seconds=30')
 	)
 
 	@classmethod
