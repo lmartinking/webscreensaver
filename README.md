@@ -3,6 +3,14 @@ webscreensaver
 
 A screen hack which uses WebKit and works with XScreensaver
 
+dependencies
+------------
+
+ * python 2.7
+ * pywebkitgtk
+ * pygtk (gtk 2)
+ * xscreensaver
+
 install
 -------
 
