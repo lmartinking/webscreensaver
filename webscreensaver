@@ -89,14 +89,18 @@ FAVOURITES = {
     'conductor': 'http://www.mta.me/'
 }
 
-def random_screensaver():
-    return random.choice(FAVOURITES.values())
+def determine_screensaver(name=None):
+    if name in FAVOURITES:
+        return FAVOURITES[name]
+    else:
+        return random.choice(FAVOURITES.values())
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='WebScreensaver')
     parser.add_argument('-window-id', help='XID of Window to draw on')
     parser.add_argument('-url', help='URL of page to display')
+    parser.add_argument('-choose', help='Select a favourite')
     args = parser.parse_args()
 
     gobject.threads_init()
@@ -104,7 +108,7 @@ if __name__ == "__main__":
     if args.url:
         url = args.url
     else:
-        url = random_screensaver()
+        url = determine_screensaver(args.choose)
 
     saver = WebScreensaver(
         url=url,
