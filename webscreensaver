@@ -148,11 +148,23 @@ class WebHacks(object):
 			script=UserScripts.remove_ids("msg")	
 		),
 		Hack('kinect',			url='http://mrdoob.com/lab/javascript/webgl/kinect/'),
-		Hack('endless-forest',	url='http://oos.moxiecode.com/js_webgl/forest/index.html'),
-		Hack('cell-shader',		url='http://www.ro.me/tech/cel-shader'),
-		Hack('hatching-glow',	url='http://www.ro.me/tech/hatching-glow-shader'),
-		Hack('marbles',			url='http://experiments.joshua-perez.com/marbles/'),
-		Hack('shadow-map',		url='http://alteredqualia.com/three/examples/webgl_shadowmap.html')
+		Hack('endless-forest',
+			url='http://oos.moxiecode.com/js_webgl/forest/index.html',
+			script=UserScripts.remove_ids("infobutton")
+		),
+		Hack('cell-shader',		url='http://www.ro.me/tech/demos/6/index.html'),
+		Hack('hatching-glow',
+			url='http://www.ro.me/tech/demos/1/index.html',
+			script=UserScripts.remove_ids("info")
+		),
+		Hack('marbles',
+			url='http://experiments.joshua-perez.com/marbles/',
+			script=UserScripts.remove_ids("guidat")
+		),
+		Hack('shadow-map',
+			url='http://alteredqualia.com/three/examples/webgl_shadowmap.html',
+			script=UserScripts.remove_ids("info")
+		)
 	)
 
 	@classmethod
