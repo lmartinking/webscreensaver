@@ -11,6 +11,10 @@ import gtk
 import webkit
 
 class WebScreensaver(object):
+	'''
+	A simple wrapper for WebKit which works as an XScreensaver Hack
+	'''
+	
 	def __init__(self, url='http://www.google.com', window_id=None, script=None):
 		if window_id:
 			self.window_id = window_id
@@ -27,6 +31,7 @@ class WebScreensaver(object):
 		self.url = url
 
 	def setup_window(self):
+		'''Perform some magic (if needed) to set up a Gtk window'''
 		win = None
 
 		if self.window_id:
@@ -35,9 +40,13 @@ class WebScreensaver(object):
 
 			x, y, w, h, _ = self.gdk_win.get_geometry()
 
+			# There is a degree of mystery to this process...
 			win.set_has_window(True)
 			win.set_window(self.gdk_win)
 
+			# Gtk seems to create another window, as a subwindow
+			# of self.gdk_win, so we then move and resize our actual
+			# window to cover our parent window exactly
 			win.move(x, y)
 			win.set_default_size(w, h)
 			win.set_size_request(w, h)
@@ -52,6 +61,7 @@ class WebScreensaver(object):
 		self.win = win
 
 	def setup_browser(self):
+		'''Sets up WebKit in our window'''
 		browser = webkit.WebView()
 
 		# Try to enable webgl
@@ -61,6 +71,8 @@ class WebScreensaver(object):
 		except:
 			pass
 
+		# Take a stab at guessing whether we are running in the
+		# XScreensaver preview window...
 		if self.w < 320 and self.h < 240:
 			 browser.set_full_content_zoom(True)
 			 browser.set_zoom_level(0.4)
@@ -72,16 +84,22 @@ class WebScreensaver(object):
 		self.browser = browser
 
 	def handle_on_load(self, view, frame, user_data=None):
+		'''
+		Handler for browser page load events.
+		This will be executed for every frame within the browser.
+		'''
 		if self.script:
 			print "Executing script: ", self.script
 			self.browser.execute_script(self.script)
 
 	def setup_layout(self):
+		'''Make sure the browser can expand without affecting the window'''
 		sw = gtk.Layout()
 		sw.put(self.browser, 0, 0)
 		self.win.add(sw)
 
 	def setup(self):
+		'''Do all the things!'''
 		self.setup_window()
 		self.setup_browser()
 		self.setup_layout()
@@ -93,6 +111,7 @@ class WebScreensaver(object):
 
 	@classmethod
 	def determine_window_id(cls, win_id=None):
+		'''Try and get an XID to use as our parent window'''
 		if not win_id:
 			win_id = os.getenv('XSCREENSAVER_WINDOW')
 
@@ -102,6 +121,10 @@ class WebScreensaver(object):
 		return win_id
 
 class UserScripts(object):
+	'''
+	Some quick and dirty scripts to help us remove cruft from web pages
+	'''
+	
 	@classmethod
 	def remove_ids(cls, _id):
 		script = '''
@@ -131,6 +154,10 @@ class UserScripts(object):
 		return script % tag
 
 class WebHacks(object):
+	'''
+	A collection of neat HTML5/WebGL demos
+	'''
+	
 	class Hack(object):
 		__slots__ = "name url script".split(" ")
 
@@ -178,6 +205,7 @@ class WebHacks(object):
 			if hack.name == name:
 				return hack		
 
+		# I'm feeling lucky :-)
 		return random.choice(cls.hacks)
 
 if __name__ == "__main__":
@@ -193,6 +221,7 @@ if __name__ == "__main__":
 		WebHacks.print_list()
 		sys.exit(0)
 
+	# I believe that WebKit likes threads
 	gobject.threads_init()
 
 	url, script = None, None
