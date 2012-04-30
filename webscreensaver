@@ -16,19 +16,12 @@ class WebScreensaver(object):
 	'''
 	
 	def __init__(self, url='http://www.google.com', window_id=None, script=None):
-		if window_id:
-			self.window_id = window_id
-		else:
-			self.window_id = None
-
-		if script:
-			self.script = script
-		else:
-			self.script = None
-
+		self.window_id = window_id
+		self.script = script
+		self.url = url
+		
 		self.w = 640
 		self.h = 480
-		self.url = url
 
 	def setup_window(self):
 		'''Perform some magic (if needed) to set up a Gtk window'''
@@ -36,17 +29,17 @@ class WebScreensaver(object):
 
 		if self.window_id:
 			win = gtk.Window(gtk.WINDOW_POPUP)
-			self.gdk_win = gtk.gdk.window_foreign_new(self.window_id)
-
-			x, y, w, h, _ = self.gdk_win.get_geometry()
-
+			
 			# There is a degree of mystery to this process...
+			self.gdk_win = gtk.gdk.window_foreign_new(self.window_id)
 			win.set_has_window(True)
 			win.set_window(self.gdk_win)
 
 			# Gtk seems to create another window, as a subwindow
 			# of self.gdk_win, so we then move and resize our actual
 			# window to cover our parent window exactly
+			x, y, w, h, _ = self.gdk_win.get_geometry()
+			
 			win.move(x, y)
 			win.set_default_size(w, h)
 			win.set_size_request(w, h)
