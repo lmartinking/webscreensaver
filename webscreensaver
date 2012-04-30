@@ -49,9 +49,12 @@ class WebScreensaver(object):
 	def setup_browser(self):
 		browser = webkit.WebView()
 
-		# Enable webgl
-		settings = browser.get_settings()
-		settings.set_property('enable-webgl', True)
+		# Try to enable webgl
+		try:
+			settings = browser.get_settings()
+			settings.set_property('enable-webgl', True)
+		except:
+			pass
 
 		if self.w < 320 and self.h < 240:
 			 browser.set_full_content_zoom(True)
