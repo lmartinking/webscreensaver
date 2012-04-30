@@ -21,7 +21,7 @@ class WebScreensaver(object):
         self.h = 480
         self.url = url
 
-    def setup(self):
+    def setup_window(self):
         win = None
 
         if self.window_id:
@@ -44,26 +44,36 @@ class WebScreensaver(object):
             win = gtk.Window()
             win.set_default_size(self.w, self.h)
 
-        win.connect('destroy', gtk.main_quit)
+        self.win = win
 
+    def setup_browser(self):
         browser = webkit.WebView()
+
+        # Enable webgl
+        settings = browser.get_settings()
+        settings.set_property('enable-webgl', True)
 
         if self.w < 320 and self.h < 240:
              browser.set_full_content_zoom(True)
              browser.set_zoom_level(0.4)
-             pass
 
         browser.set_size_request(self.w, self.h)
-        browser.open(self.url)
-
-        sw = gtk.Layout()
-        sw.put(browser, 0, 0)
-
-        win.add(sw)
-        win.show_all()
 
         self.browser = browser
-        self.win = win
+
+    def setup_layout(self):
+        sw = gtk.Layout()
+        sw.put(self.browser, 0, 0)
+        self.win.add(sw)
+
+    def setup(self):
+        self.setup_window()
+        self.setup_browser()
+        self.setup_layout()
+
+        self.win.connect('destroy', gtk.main_quit)
+        self.win.show_all()
+        self.browser.open(self.url)
 
 def determine_window_id(win_id=None):
     if not win_id:
