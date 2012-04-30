@@ -85,8 +85,15 @@ def determine_window_id(win_id=None):
     return win_id
 
 FAVOURITES = {
-    'starfield': 'http://www.chiptune.com/starfield/starfield.html',
-    'conductor': 'http://www.mta.me/'
+    'starfield':     'http://www.chiptune.com/starfield/starfield.html',
+    'conductor':     'http://www.mta.me/',
+    'reactive-ball': 'http://lab.aerotwist.com/webgl/reactive-ball/',
+    'kinect':        'http://mrdoob.com/lab/javascript/webgl/kinect/',
+    'endless-forest':'http://oos.moxiecode.com/js_webgl/forest/index.html',
+    'cell-shader':   'http://www.ro.me/tech/cel-shader',
+    'hatching-glow': 'http://www.ro.me/tech/hatching-glow-shader',
+    'marbles':       'http://experiments.joshua-perez.com/marbles/',
+    'shadow-map':    'http://alteredqualia.com/three/examples/webgl_shadowmap.html'
 }
 
 def determine_screensaver(name=None):
