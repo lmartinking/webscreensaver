@@ -5,6 +5,7 @@
 import os
 import sys
 import random
+import signal
 
 import gobject
 import gtk
@@ -99,6 +100,10 @@ class WebScreensaver(object):
 
 		self.win.connect('destroy', gtk.main_quit)
 		self.win.connect('delete-event', gtk.main_quit)
+
+		signal.signal(signal.SIGINT, gtk.main_quit)
+		signal.signal(signal.SIGTERM, gtk.main_quit)
+
 		self.win.show_all()
 		self.browser.open(self.url)
 
