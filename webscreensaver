@@ -30,22 +30,21 @@ class WebScreensaver(object):
 
 		if self.window_id:
 			win = gtk.Window(gtk.WINDOW_POPUP)
-			
+
 			# There is a degree of mystery to this process...
 			self.gdk_win = gtk.gdk.window_foreign_new(self.window_id)
-			win.set_has_window(True)
-			win.set_window(self.gdk_win)
 
-			# Gtk seems to create another window, as a subwindow
-			# of self.gdk_win, so we then move and resize our actual
-			# window to cover our parent window exactly
+			# We show the window so we get a Gdk Window,
+			# then we we can reparent it...
+			win.show()
+			win.get_window().reparent(self.gdk_win, 0, 0)
+
 			x, y, w, h, _ = self.gdk_win.get_geometry()
 			
-			win.move(x, y)
+			# Make us cover our parent window
+			win.move(0, 0)
 			win.set_default_size(w, h)
 			win.set_size_request(w, h)
-
-			win.set_realized(True)
 
 			self.w, self.h = w, h
 		else:
