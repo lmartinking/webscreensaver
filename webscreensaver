@@ -100,7 +100,7 @@ class WebScreensaver(object):
 		self.win.connect('destroy', gtk.main_quit)
 		self.win.connect('delete-event', gtk.main_quit)
 
-		signal.signal(signal.SIGINT, gtk.main_quit)
+		signal.signal(signal.SIGINT, signal.SIG_DFL)
 		signal.signal(signal.SIGTERM, gtk.main_quit)
 
 		self.win.show_all()
