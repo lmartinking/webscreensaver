@@ -166,17 +166,14 @@ class WebHacks(object):
 			url='http://www.chiptune.com/starfield/starfield.html',
 			script=UserScripts.remove_tags("iframe")
 		),
-		Hack('conductor',		url='http://www.mta.me/'),
 		Hack('reactive-ball',
 			url='http://lab.aerotwist.com/webgl/reactive-ball/',
 			script=UserScripts.remove_ids("msg")	
 		),
-		Hack('kinect',			url='http://mrdoob.com/lab/javascript/webgl/kinect/'),
 		Hack('endless-forest',
 			url='http://oos.moxiecode.com/js_webgl/forest/index.html',
 			script=UserScripts.remove_ids("infobutton")
 		),
-		Hack('cell-shader',		url='http://www.ro.me/tech/demos/6/index.html'),
 		Hack('hatching-glow',
 			url='http://www.ro.me/tech/demos/1/index.html',
 			script=UserScripts.remove_ids("info")
@@ -189,7 +186,12 @@ class WebHacks(object):
 			url='http://alteredqualia.com/three/examples/webgl_shadowmap.html',
 			script=UserScripts.remove_ids("info")
 		),
-		Hack('gimme-shiny',		url='http://gimmeshiny.com/?seconds=30')
+
+		Hack('gimme-shiny',		url='http://gimmeshiny.com/?seconds=30'),
+		Hack('cell-shader',		url='http://www.ro.me/tech/demos/6/index.html'),
+		Hack('kinect',			url='http://mrdoob.com/lab/javascript/webgl/kinect/'),
+		Hack('conductor',		url='http://www.mta.me/'),
+		Hack('dashboard-clock', url='http://daneden.me/dashboard/')
 	)
 
 	@classmethod
