@@ -170,10 +170,6 @@ class WebHacks(object):
 			url='http://lab.aerotwist.com/webgl/reactive-ball/',
 			script=UserScripts.remove_ids("msg")	
 		),
-		Hack('endless-forest',
-			url='http://oos.moxiecode.com/js_webgl/forest/index.html',
-			script=UserScripts.remove_ids("infobutton")
-		),
 		Hack('hatching-glow',
 			url='http://www.ro.me/tech/demos/1/index.html',
 			script=UserScripts.remove_ids("info")
