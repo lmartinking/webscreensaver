@@ -183,6 +183,8 @@ class WebHacks(object):
 			script=UserScripts.remove_ids("info")
 		),
 
+		Hack('flying-pigs',		url='http://jterrace.github.com/pigsflying/'),
+
 		Hack('gimme-shiny',		url='http://gimmeshiny.com/?seconds=30'),
 		Hack('cell-shader',		url='http://www.ro.me/tech/demos/6/index.html'),
 		Hack('kinect',			url='http://mrdoob.com/lab/javascript/webgl/kinect/'),
