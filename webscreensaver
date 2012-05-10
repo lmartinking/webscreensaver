@@ -237,4 +237,4 @@ if __name__ == "__main__":
 	)
 	saver.setup()
 
-	gtk.mainloop()
+	gtk.main()
