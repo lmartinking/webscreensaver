@@ -16,9 +16,9 @@ class WebScreensaver(object):
 	A simple wrapper for WebKit which works as an XScreensaver Hack
 	'''
 	
-	def __init__(self, url='http://www.google.com', window_id=None, script=None):
+	def __init__(self, url='http://www.google.com', window_id=None, scripts=None):
 		self.window_id = window_id
-		self.script = script
+		self.scripts = scripts
 		self.url = url
 		
 		self.w = 640
@@ -81,9 +81,13 @@ class WebScreensaver(object):
 		Handler for browser page load events.
 		This will be executed for every frame within the browser.
 		'''
-		if self.script:
-			print "Executing script: ", self.script
-			self.browser.execute_script(self.script)
+
+		if not self.scripts:
+			return
+
+		for script in self.scripts:
+			print "Executing script: ", script
+			self.browser.execute_script(script)
 
 	def setup_layout(self):
 		'''Make sure the browser can expand without affecting the window'''
@@ -156,31 +160,35 @@ class WebHacks(object):
 	'''
 	
 	class Hack(object):
-		__slots__ = "name url script".split(" ")
+		__slots__ = "name url scripts".split(" ")
 
-		def __init__(self, name, url=None, script=None):
-			self.name, self.url, self.script = name, url, script
+		def __init__(self, name, url=None, scripts=None):
+			self.name, self.url, self.scripts = name, url, scripts
 
 	hacks = (
 		Hack('starfield',
 			url='http://www.chiptune.com/starfield/starfield.html',
-			script=UserScripts.remove_tags("iframe")
+			scripts=[ UserScripts.remove_tags("iframe") ]
 		),
 		Hack('reactive-ball',
 			url='http://lab.aerotwist.com/webgl/reactive-ball/',
-			script=UserScripts.remove_ids("msg")	
+			scripts=[ UserScripts.remove_ids("msg") ]
 		),
 		Hack('hatching-glow',
 			url='http://www.ro.me/tech/demos/1/index.html',
-			script=UserScripts.remove_ids("info")
+			scripts=[ UserScripts.remove_ids("info") ]
 		),
 		Hack('marbles',
 			url='http://experiments.joshua-perez.com/marbles/',
-			script=UserScripts.remove_ids("guidat")
+			scripts=[ UserScripts.remove_ids("guidat") ]
 		),
 		Hack('shadow-map',
 			url='http://alteredqualia.com/three/examples/webgl_shadowmap.html',
-			script=UserScripts.remove_ids("info")
+			scripts=[ UserScripts.remove_ids("info") ]
+		),
+		Hack('birds',
+			url='http://mrdoob.github.com/three.js/examples/canvas_geometry_birds.html',
+			scripts=[ UserScripts.remove_ids("info"), UserScripts.remove_ids("container") ]
 		),
 
 		Hack('flying-pigs',		url='http://jterrace.github.com/pigsflying/'),
@@ -222,18 +230,18 @@ if __name__ == "__main__":
 	# I believe that WebKit likes threads
 	gobject.threads_init()
 
-	url, script = None, None
+	url, scripts = None, None
 
 	if args.url:
 		url = args.url
 	else:
 		hack = WebHacks.determine_screensaver(args.choose)
-		url, script = hack.url, hack.script
+		url, scripts = hack.url, hack.scripts
 
 	saver = WebScreensaver(
 		url=url,
 		window_id=WebScreensaver.determine_window_id(args.window_id),
-		script=script
+		scripts=scripts
 	)
 	saver.setup()
 
