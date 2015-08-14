@@ -7,20 +7,18 @@ import sys
 import random
 import signal
 
-import gobject
-import gtk
-import webkit
+from gi.repository import Gtk, GObject, WebKit
 
 class WebScreensaver(object):
 	'''
 	A simple wrapper for WebKit which works as an XScreensaver Hack
 	'''
-	
+
 	def __init__(self, url='http://www.google.com', window_id=None, scripts=None):
 		self.window_id = window_id
 		self.scripts = scripts
 		self.url = url
-		
+
 		self.w = 640
 		self.h = 480
 
@@ -29,10 +27,10 @@ class WebScreensaver(object):
 		win = None
 
 		if self.window_id:
-			win = gtk.Window(gtk.WINDOW_POPUP)
+			win = Gtk.Window(Gtk.WINDOW_POPUP)
 
 			# There is a degree of mystery to this process...
-			self.gdk_win = gtk.gdk.window_foreign_new(self.window_id)
+			self.gdk_win = Gtk.gdk.window_foreign_new(self.window_id)
 
 			# We show the window so we get a Gdk Window,
 			# then we we can reparent it...
@@ -40,7 +38,7 @@ class WebScreensaver(object):
 			win.get_window().reparent(self.gdk_win, 0, 0)
 
 			x, y, w, h, _ = self.gdk_win.get_geometry()
-			
+
 			# Make us cover our parent window
 			win.move(0, 0)
 			win.set_default_size(w, h)
@@ -48,14 +46,14 @@ class WebScreensaver(object):
 
 			self.w, self.h = w, h
 		else:
-			win = gtk.Window()
+			win = Gtk.Window()
 			win.set_default_size(self.w, self.h)
 
 		self.win = win
 
 	def setup_browser(self):
 		'''Sets up WebKit in our window'''
-		browser = webkit.WebView()
+		browser = WebKit.WebView()
 
 		# Try to enable webgl
 		try:
@@ -91,7 +89,7 @@ class WebScreensaver(object):
 
 	def setup_layout(self):
 		'''Make sure the browser can expand without affecting the window'''
-		sw = gtk.Layout()
+		sw = Gtk.Layout()
 		sw.put(self.browser, 0, 0)
 		self.win.add(sw)
 
@@ -101,11 +99,11 @@ class WebScreensaver(object):
 		self.setup_browser()
 		self.setup_layout()
 
-		self.win.connect('destroy', gtk.main_quit)
-		self.win.connect('delete-event', gtk.main_quit)
+		self.win.connect('destroy', Gtk.main_quit)
+		self.win.connect('delete-event', Gtk.main_quit)
 
 		signal.signal(signal.SIGINT, signal.SIG_DFL)
-		signal.signal(signal.SIGTERM, gtk.main_quit)
+		signal.signal(signal.SIGTERM, Gtk.main_quit)
 
 		self.win.show_all()
 		self.browser.open(self.url)
@@ -209,7 +207,7 @@ class WebHacks(object):
 	def determine_screensaver(cls, name=None):
 		for hack in cls.hacks:
 			if hack.name == name:
-				return hack		
+				return hack
 
 		# I'm feeling lucky :-)
 		return random.choice(cls.hacks)
@@ -227,8 +225,8 @@ if __name__ == "__main__":
 		WebHacks.print_list()
 		sys.exit(0)
 
-	# I believe that WebKit likes threads
-	gobject.threads_init()
+	# FIXME: Remove that if not needed anymore
+	GObject.threads_init()
 
 	url, scripts = None, None
 
@@ -245,4 +243,4 @@ if __name__ == "__main__":
 	)
 	saver.setup()
 
-	gtk.main()
+	Gtk.main()
