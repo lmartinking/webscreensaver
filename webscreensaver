@@ -7,53 +7,58 @@ import sys
 import random
 import signal
 
-from gi.repository import Gtk, GObject, WebKit
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('GdkX11', '3.0')
+gi.require_version('WebKit', '3.0')
+gi.require_version('Soup', '2.4')
+from gi.repository import Gtk, Gdk, GdkX11, GObject, Soup, WebKit
 
 class WebScreensaver(object):
 	'''
 	A simple wrapper for WebKit which works as an XScreensaver Hack
 	'''
 
-	def __init__(self, url='http://www.google.com', window_id=None, scripts=None):
+	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None):
 		self.window_id = window_id
 		self.scripts = scripts
 		self.url = url
+		self.cookie_file = cookie_file
 
 		self.w = 640
 		self.h = 480
 
 	def setup_window(self):
 		'''Perform some magic (if needed) to set up a Gtk window'''
-		win = None
-
 		if self.window_id:
-			win = Gtk.Window(Gtk.WINDOW_POPUP)
+			self.win = Gtk.Window(Gtk.WindowType.POPUP)
 
-			# There is a degree of mystery to this process...
-			self.gdk_win = Gtk.gdk.window_foreign_new(self.window_id)
+			gdk_display = GdkX11.X11Display.get_default()
+			self.gdk_win = GdkX11.X11Window.foreign_new_for_display(gdk_display, self.window_id)
 
 			# We show the window so we get a Gdk Window,
 			# then we we can reparent it...
-			win.show()
-			win.get_window().reparent(self.gdk_win, 0, 0)
+			self.win.show()
+			self.win.get_window().reparent(self.gdk_win, 0, 0)
+			self.win.get_window().show()
 
-			x, y, w, h, _ = self.gdk_win.get_geometry()
+			x, y, w, h = self.gdk_win.get_geometry()
 
 			# Make us cover our parent window
-			win.move(0, 0)
-			win.set_default_size(w, h)
-			win.set_size_request(w, h)
+			self.win.move(0, 0)
+			self.win.set_default_size(w, h)
+			self.win.set_size_request(w, h)
+			self.win.show()
 
 			self.w, self.h = w, h
 		else:
-			win = Gtk.Window()
-			win.set_default_size(self.w, self.h)
+			self.win = Gtk.Window()
+			self.win.set_default_size(self.w, self.h)
 
-		self.win = win
 
 	def setup_browser(self):
 		'''Sets up WebKit in our window'''
-		browser = WebKit.WebView()
+		self.browser = WebKit.WebView()
 
 		# Try to enable webgl
 		try:
@@ -65,14 +70,21 @@ class WebScreensaver(object):
 		# Take a stab at guessing whether we are running in the
 		# XScreensaver preview window...
 		if self.w < 320 and self.h < 240:
-			 browser.set_full_content_zoom(True)
-			 browser.set_zoom_level(0.4)
+			 self.browser.set_full_content_zoom(True)
+			 self.browser.set_zoom_level(0.4)
 
-		browser.set_size_request(self.w, self.h)
 
-		browser.connect('onload-event', self.handle_on_load)
+		self.browser.set_size_request(self.w, self.h)
 
-		self.browser = browser
+		self.browser.connect('onload-event', self.handle_on_load)
+
+
+	def setup_cookie_jar(self):
+		if (self.cookie_file):
+			cookiejar = Soup.CookieJarText.new(self.cookie_file, False)
+			cookiejar.set_accept_policy(Soup.CookieJarAcceptPolicy.ALWAYS)
+			session = WebKit.get_default_session()
+			session.add_feature(cookiejar)
 
 	def handle_on_load(self, view, frame, user_data=None):
 		'''
@@ -98,6 +110,7 @@ class WebScreensaver(object):
 		self.setup_window()
 		self.setup_browser()
 		self.setup_layout()
+		self.setup_cookie_jar()
 
 		self.win.connect('destroy', Gtk.main_quit)
 		self.win.connect('delete-event', Gtk.main_quit)
@@ -106,6 +119,8 @@ class WebScreensaver(object):
 		signal.signal(signal.SIGTERM, Gtk.main_quit)
 
 		self.win.show_all()
+		Gdk.Window.process_all_updates()
+
 		self.browser.open(self.url)
 
 	@classmethod
@@ -123,7 +138,7 @@ class UserScripts(object):
 	'''
 	Some quick and dirty scripts to help us remove cruft from web pages
 	'''
-	
+
 	@classmethod
 	def remove_ids(cls, _id):
 		script = '''
@@ -219,6 +234,7 @@ if __name__ == "__main__":
 	parser.add_argument('-url', help='URL of page to display')
 	parser.add_argument('-choose', help='Select a favourite')
 	parser.add_argument('-list', action='store_true', help='List favourites')
+	parser.add_argument('-cookie-file', metavar='PATH', help='Store cookies in PATH')
 	args = parser.parse_args()
 
 	if args.list:
@@ -239,7 +255,8 @@ if __name__ == "__main__":
 	saver = WebScreensaver(
 		url=url,
 		window_id=WebScreensaver.determine_window_id(args.window_id),
-		scripts=scripts
+		scripts=scripts,
+		cookie_file=args.cookie_file
 	)
 	saver.setup()
 
