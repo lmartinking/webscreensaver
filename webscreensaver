@@ -40,7 +40,6 @@ class WebScreensaver(object):
 			# then we we can reparent it...
 			self.win.show()
 			self.win.get_window().reparent(self.gdk_win, 0, 0)
-			self.win.get_window().show()
 
 			x, y, w, h = self.gdk_win.get_geometry()
 
@@ -48,7 +47,6 @@ class WebScreensaver(object):
 			self.win.move(0, 0)
 			self.win.set_default_size(w, h)
 			self.win.set_size_request(w, h)
-			self.win.show()
 
 			self.w, self.h = w, h
 		else:
@@ -112,11 +110,14 @@ class WebScreensaver(object):
 		self.setup_layout()
 		self.setup_cookie_jar()
 
-		self.win.connect('destroy', Gtk.main_quit)
-		self.win.connect('delete-event', Gtk.main_quit)
+		def terminate(*args):
+			Gtk.main_quit()
+
+		self.win.connect('destroy', terminate)
+		self.win.connect('delete-event', terminate)
 
 		signal.signal(signal.SIGINT, signal.SIG_DFL)
-		signal.signal(signal.SIGTERM, Gtk.main_quit)
+		signal.signal(signal.SIGTERM, terminate)
 
 		self.win.show_all()
 		Gdk.Window.process_all_updates()
@@ -240,9 +241,6 @@ if __name__ == "__main__":
 	if args.list:
 		WebHacks.print_list()
 		sys.exit(0)
-
-	# FIXME: Remove that if not needed anymore
-	GObject.threads_init()
 
 	url, scripts = None, None
 
