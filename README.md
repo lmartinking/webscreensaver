@@ -7,9 +7,9 @@ dependencies
 ------------
 
  * python 2.7
- * pywebkitgtk
- * pygtk (gtk 2)
  * xscreensaver
+ * GTK3
+ * webkitgtk
 
 install
 -------
@@ -22,5 +22,9 @@ Copy `webscreensaver` into `/usr/lib/xscreensaver` and then edit `~/.xscreensave
 If you wish to set the url:
 
     -url <url_to_the_page_you_want>
-    
+
 Otherwise it will choose a random one.
+
+You can persist cookies by specifying a cookie file:
+
+    -cookie-file <path_to_cookie_file>
