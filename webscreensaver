@@ -192,10 +192,6 @@ class WebHacks(object):
 			url='http://www.ro.me/tech/demos/1/index.html',
 			scripts=[ UserScripts.remove_ids("info") ]
 		),
-		Hack('marbles',
-			url='http://experiments.joshua-perez.com/marbles/',
-			scripts=[ UserScripts.remove_ids("guidat") ]
-		),
 		Hack('shadow-map',
 			url='http://alteredqualia.com/three/examples/webgl_shadowmap.html',
 			scripts=[ UserScripts.remove_ids("info") ]
@@ -205,13 +201,10 @@ class WebHacks(object):
 			scripts=[ UserScripts.remove_ids("info"), UserScripts.remove_ids("container") ]
 		),
 
-		Hack('flying-pigs',		url='http://jterrace.github.com/pigsflying/'),
-
 		Hack('gimme-shiny',		url='http://gimmeshiny.com/?seconds=30'),
 		Hack('cell-shader',		url='http://www.ro.me/tech/demos/6/index.html'),
 		Hack('kinect',			url='http://mrdoob.com/lab/javascript/webgl/kinect/'),
 		Hack('conductor',		url='http://www.mta.me/'),
-		Hack('dashboard-clock', url='http://daneden.me/dashboard/')
 	)
 
 	@classmethod
