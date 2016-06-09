@@ -60,10 +60,10 @@ class WebScreensaver(object):
 
 		# Try to enable webgl
 		try:
-			settings = browser.get_settings()
+			settings = self.browser.get_settings()
 			settings.set_property('enable-webgl', True)
-		except:
-			pass
+		except Exception as err:
+			print "Could not enable WebGL: {}".format(err)
 
 		# Take a stab at guessing whether we are running in the
 		# XScreensaver preview window...
