@@ -204,6 +204,8 @@ class WebHacks(object):
 		Hack('cell-shader',		url='http://www.ro.me/tech/demos/6/index.html'),
 		Hack('kinect',			url='http://mrdoob.com/lab/javascript/webgl/kinect/'),
 		Hack('conductor',		url='http://www.mta.me/'),
+
+		Hack('flying-toasters',	url='http://bryanbraun.github.io/after-dark-css/all/flying-toasters.html'),
 	)
 
 	@classmethod
