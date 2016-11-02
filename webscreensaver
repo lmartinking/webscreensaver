@@ -14,6 +14,7 @@ gi.require_version('WebKit', '3.0')
 gi.require_version('Soup', '2.4')
 from gi.repository import Gtk, Gdk, GdkX11, GObject, Soup, WebKit
 
+
 class WebScreensaver(object):
 	'''
 	A simple wrapper for WebKit which works as an XScreensaver Hack
@@ -53,7 +54,6 @@ class WebScreensaver(object):
 			self.win = Gtk.Window()
 			self.win.set_default_size(self.w, self.h)
 
-
 	def setup_browser(self):
 		'''Sets up WebKit in our window'''
 		self.browser = WebKit.WebView()
@@ -68,14 +68,12 @@ class WebScreensaver(object):
 		# Take a stab at guessing whether we are running in the
 		# XScreensaver preview window...
 		if self.w < 320 and self.h < 240:
-			 self.browser.set_full_content_zoom(True)
-			 self.browser.set_zoom_level(0.4)
-
+			self.browser.set_full_content_zoom(True)
+			self.browser.set_zoom_level(0.4)
 
 		self.browser.set_size_request(self.w, self.h)
 
 		self.browser.connect('onload-event', self.handle_on_load)
-
 
 	def setup_cookie_jar(self):
 		if (self.cookie_file):
@@ -135,6 +133,7 @@ class WebScreensaver(object):
 
 		return win_id
 
+
 class UserScripts(object):
 	'''
 	Some quick and dirty scripts to help us remove cruft from web pages
@@ -152,7 +151,6 @@ class UserScripts(object):
 		'''
 		return script % _id
 
-
 	@classmethod
 	def remove_tags(cls, tag):
 		script = '''
@@ -167,6 +165,7 @@ class UserScripts(object):
 			})();
 		'''
 		return script % tag
+
 
 class WebHacks(object):
 	'''
@@ -220,6 +219,7 @@ class WebHacks(object):
 
 		# I'm feeling lucky :-)
 		return random.choice(cls.hacks)
+
 
 if __name__ == "__main__":
 	import argparse
