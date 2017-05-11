@@ -28,3 +28,5 @@ Otherwise it will choose a random one.
 You can persist cookies by specifying a cookie file:
 
     -cookie-file <path_to_cookie_file>
+
+*NOTE:* All parameters should be all on the same line as `webscreensaver`
