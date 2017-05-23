@@ -13,7 +13,7 @@ dependencies
 
 in ubuntu following should be sufficient:
 
-    apt install python2.7 gir1.2-webkit-0.3 xscreensaver python-gtk2
+    sudo apt install python2.7 gir1.2-webkit-0.3 xscreensaver python-gtk2
 
 install
 -------
