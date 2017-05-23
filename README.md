@@ -16,7 +16,7 @@ install
 
 Copy `webscreensaver` into `/usr/lib/xscreensaver` and then edit `~/.xscreensaver`:
 
-    programs:
+    programs:                                       \
                   webscreensaver                  \n\
 
 If you wish to set the url:
