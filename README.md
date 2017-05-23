@@ -11,6 +11,10 @@ dependencies
  * GTK3
  * webkitgtk
 
+in ubuntu following should be sufficient:
+
+    apt install python2.7 gir1.2-webkit-0.3 xscreensaver python-gtk2
+
 install
 -------
 
@@ -30,3 +34,4 @@ You can persist cookies by specifying a cookie file:
     -cookie-file <path_to_cookie_file>
 
 *NOTE:* All parameters should be all on the same line as `webscreensaver`
+
