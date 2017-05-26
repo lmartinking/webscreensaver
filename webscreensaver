@@ -20,11 +20,12 @@ class WebScreensaver(object):
 	A simple wrapper for WebKit which works as an XScreensaver Hack
 	'''
 
-	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None):
+	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None, cookie_file_readonly=False):
 		self.window_id = window_id
 		self.scripts = scripts
 		self.url = url
 		self.cookie_file = cookie_file
+		self.cookie_file_readonly = cookie_file_readonly
 
 		self.w = 640
 		self.h = 480
@@ -77,7 +78,7 @@ class WebScreensaver(object):
 
 	def setup_cookie_jar(self):
 		if (self.cookie_file):
-			cookiejar = Soup.CookieJarText.new(self.cookie_file, False)
+			cookiejar = Soup.CookieJarText.new(self.cookie_file, self.cookie_file_readonly)
 			cookiejar.set_accept_policy(Soup.CookieJarAcceptPolicy.ALWAYS)
 			session = WebKit.get_default_session()
 			session.add_feature(cookiejar)
@@ -231,6 +232,7 @@ if __name__ == "__main__":
 	parser.add_argument('-choose', help='Select a favourite')
 	parser.add_argument('-list', action='store_true', help='List favourites')
 	parser.add_argument('-cookie-file', metavar='PATH', help='Store cookies in PATH')
+	parser.add_argument('-cookie-file-readonly', action='store_true', help='Set given cookie-store to read-only')
 	args = parser.parse_args()
 
 	if args.list:
@@ -249,7 +251,8 @@ if __name__ == "__main__":
 		url=url,
 		window_id=WebScreensaver.determine_window_id(args.window_id),
 		scripts=scripts,
-		cookie_file=args.cookie_file
+		cookie_file=args.cookie_file,
+		cookie_file_readonly=args.cookie_file_readonly
 	)
 	saver.setup()
 
