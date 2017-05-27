@@ -46,7 +46,7 @@ print(url)
 view.open(url) 
 Gtk.main()
 
-# automatic saving with CookieJarText does not work - so I'll do it
+# automatic saving with CookieJarText does not include some session cookies - so I'll do it
 jar = open(cookie_jar, "a")
 
 for c in cookiejar.get_cookie_list(Soup.URI.new(url), True):
