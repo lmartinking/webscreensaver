@@ -6,6 +6,7 @@ import os
 import sys
 import random
 import signal
+import json
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -15,56 +16,25 @@ gi.require_version('Soup', '2.4')
 from gi.repository import Gtk, Gdk, GdkX11, Soup, WebKit, GLib
 
 
-class WebScreensaver(object):
-	'''
-	A simple wrapper for WebKit which works as an XScreensaver Hack
-	'''
-
-	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None, cookie_file_readonly=False, reload_time=None, verbose=False):
-		self.window_id = window_id
+class BrowserPane(object):
+	def __init__(self, url='http://www.google.com', scripts = None, reload_time=None, verbose=False, preview=True):
 		self.scripts = scripts
 		self.url = url
-		self.cookie_file = cookie_file
-		self.cookie_file_readonly = cookie_file_readonly
 
-		self.reload_time = reload_time
-		
+		self.reload_time = reload_time		
 		self.reload_timerID = None
 		self.reload_once = False
 		self._reloading = False
-		
+
 		self.verbose = verbose
+		self.browser = None
+		self.preview = preview
+
+	def get_browser(self):
+		'''Sets up WebKit'''
+		if self.browser:
+			return self.browser
 		
-		self.w = 640
-		self.h = 480
-
-	def setup_window(self):
-		'''Perform some magic (if needed) to set up a Gtk window'''
-		if self.window_id:
-			self.win = Gtk.Window(Gtk.WindowType.POPUP)
-
-			gdk_display = GdkX11.X11Display.get_default()
-			self.gdk_win = GdkX11.X11Window.foreign_new_for_display(gdk_display, self.window_id)
-
-			# We show the window so we get a Gdk Window,
-			# then we we can reparent it...
-			self.win.show()
-			self.win.get_window().reparent(self.gdk_win, 0, 0)
-
-			x, y, w, h = self.gdk_win.get_geometry()
-
-			# Make us cover our parent window
-			self.win.move(0, 0)
-			self.win.set_default_size(w, h)
-			self.win.set_size_request(w, h)
-
-			self.w, self.h = w, h
-		else:
-			self.win = Gtk.Window()
-			self.win.set_default_size(self.w, self.h)
-
-	def setup_browser(self):
-		'''Sets up WebKit in our window'''
 		self.browser = WebKit.WebView()
 
 		# Try to enable webgl
@@ -76,24 +46,19 @@ class WebScreensaver(object):
 
 		# Take a stab at guessing whether we are running in the
 		# XScreensaver preview window...
-		if self.w < 320 and self.h < 240:
+		if self.preview:
 			self.browser.set_full_content_zoom(True)
 			self.browser.set_zoom_level(0.4)
-
-		self.browser.set_size_request(self.w, self.h)
+			self.reload_time = 2 # force reloading - enables quit from preview?!?
 
 		self.browser.connect('onload-event', self.handle_on_load)
 		self.browser.connect('load-error', self.load_error)
 		self.browser.connect('resource-load-failed', self.resource_load_failed)
 
-	def setup_cookie_jar(self):
-		if (self.cookie_file):
-			cookiejar = Soup.CookieJarText.new(self.cookie_file, self.cookie_file_readonly)
-			cookiejar.set_accept_policy(Soup.CookieJarAcceptPolicy.ALWAYS)
-			session = WebKit.get_default_session()
-			session.add_feature(cookiejar)
-
-	def handle_on_load(self, view, frame, user_data=None):
+		self.browser.open(self.url)
+		return self.browser
+	
+	def handle_on_load(self, view, frame):
 		'''
 		Handler for browser page load events.
 		This will be executed for every frame within the browser.
@@ -139,18 +104,168 @@ class WebScreensaver(object):
 			return False
 		return True
 
+		
+class WebScreensaver(object):
+	'''
+	A simple wrapper for WebKit which works as an XScreensaver Hack
+	'''
+
+	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None, cookie_file_readonly=False, reload_time=None, verbose=False, move=False):
+		self.window_id = window_id
+		self.scripts = scripts
+		self.url = url
+		self.cookie_file = cookie_file
+		self.cookie_file_readonly = cookie_file_readonly
+
+		self.reload_time = reload_time		
+		self.verbose = verbose
+		
+		self.w = 640
+		self.h = 480
+
+		self.move = move
+		self.preview = False
+		self.browser_tree = None
+
+		if move:
+			self.move_width = 50
+			self.move_height = 10
+	
+			self.inner_x = int(self.move_width / 2)
+			self.inner_y = 0
+			self.dir_x = 1
+			self.dir_y = 1
+
+			GLib.timeout_add(5000, self.move_window)
+		else:
+			self.move_width = 0
+			self.move_height = 0
+	
+			self.inner_x = int(self.move_width / 2)
+			self.inner_y = 0
+			self.dir_x = 0
+			self.dir_y = 0
+
+
+	def setup_window(self):
+		'''Perform some magic (if needed) to set up a Gtk window'''
+		if self.window_id:
+			self.win = Gtk.Window(Gtk.WindowType.POPUP)
+
+			gdk_display = GdkX11.X11Display.get_default()
+			self.gdk_win = GdkX11.X11Window.foreign_new_for_display(gdk_display, self.window_id)
+
+			# We show the window so we get a Gdk Window,
+			# then we we can reparent it...
+			self.win.show()
+			self.win.get_window().reparent(self.gdk_win, 0, 0)
+
+			x, y, w, h = self.gdk_win.get_geometry()
+
+			# Make us cover our parent window
+			self.win.move(0, 0)
+			self.win.set_default_size(w, h)
+			self.win.set_size_request(w, h)
+
+			self.w, self.h = w, h
+		else:
+			self.win = Gtk.Window()
+			self.win.set_default_size(self.w, self.h)
+		self.win.modify_bg( Gtk.StateType.NORMAL, Gdk.Color(0,0,0));
+		
+				# Take a stab at guessing whether we are running in the
+		# XScreensaver preview window...
+		if self.w < 330 and self.h < 250:
+			self.preview = True
+
+	def move_window(self):
+		self.inner_x += self.dir_x
+		self.inner_y += self.dir_y
+		if self.inner_x >= self.move_width or self.inner_x <= 0:
+			self.dir_x *= -1
+		if self.inner_y >= self.move_height or self.inner_y <= 0:
+			self.dir_y *= -1
+
+		self.gtk_layout.move(self.scroll, self.inner_x, self.inner_y)
+		return True
+
+	def setup_cookie_jar(self):
+		''' One cookie jar for all browsers if there are multiples
+		'''
+		if (self.cookie_file):
+			cookiejar = Soup.CookieJarText.new(os.path.expanduser(self.cookie_file), self.cookie_file_readonly)
+			cookiejar.set_accept_policy(Soup.CookieJarAcceptPolicy.ALWAYS)
+			session = WebKit.get_default_session()
+			session.add_feature(cookiejar)
+
+
+	def _get_browser_tree(self, url):
+		if type(url) is str:
+			# should we store this globally for access?
+			pane = BrowserPane(url, self.scripts, self.reload_time, self.verbose, self.preview)
+			return pane.get_browser()
+		else:
+			#now we expect the dictionary:
+			# (bool vertical, int split_percentage, url1, url2)
+			# where those urls can be dictionaries again...
+			
+			vertical = url["vertical"]
+			
+			# this is only correct for the first layer!
+			if vertical:
+				split_percentage = ((self.w - self.move_width) * url["split_percentage"])/100
+			else:
+				split_percentage = ((self.h - self.move_height) * url["split_percentage"])/100
+			url1 = url["url1"]
+			url2 = url["url2"]
+			
+			pane1 = self._get_browser_tree(url1)
+			scroll_pane1 = Gtk.ScrolledWindow()
+			scroll_pane1.add(pane1)
+			scroll_pane1.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL)
+
+			pane2 = self._get_browser_tree(url2)
+			scroll_pane2 = Gtk.ScrolledWindow()
+			scroll_pane2.add(pane2)
+			scroll_pane2.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL)
+						
+			#doc says "they are arranged vertically" means the split is horizontally
+			if vertical:
+				pane = Gtk.HPaned()
+			else:
+				pane = Gtk.VPaned()
+
+			pane.pack1(scroll_pane1, True, True)
+			pane.pack2(scroll_pane2, True, True)
+			pane.set_position(split_percentage)
+
+			return pane
+
+	def get_browser_tree(self):
+		if self.browser_tree:
+			return self.browser_tree
+		else:
+			return self._get_browser_tree(self.url)
+
 	def setup_layout(self):
 		'''Make sure the browser can expand without affecting the window'''
-		sw = Gtk.Layout()
-		sw.put(self.browser, 0, 0)
-		self.win.add(sw)
+		self.gtk_layout = Gtk.Layout()
+
+		self.scroll = Gtk.ScrolledWindow()
+		self.scroll.add(self.get_browser_tree())
+		self.scroll.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL)
+		self.scroll.set_size_request(self.w - self.move_width, self.h - self.move_height)
+		
+		self.gtk_layout.put(self.scroll, self.inner_x, self.inner_y)
+
+		self.win.add(self.gtk_layout)
 
 	def setup(self):
 		'''Do all the things!'''
 		self.setup_window()
-		self.setup_browser()
-		self.setup_layout()
 		self.setup_cookie_jar()
+		self.setup_layout()
+		
 
 		def terminate(*args):
 			Gtk.main_quit()
@@ -163,8 +278,6 @@ class WebScreensaver(object):
 
 		self.win.show_all()
 		Gdk.Window.process_all_updates()
-
-		self.browser.open(self.url)
 
 	@classmethod
 	def determine_window_id(cls, win_id=None):
@@ -278,8 +391,10 @@ if __name__ == "__main__":
 	parser.add_argument('-list', action='store_true', help='List favourites')
 	parser.add_argument('-cookie-file', metavar='PATH', help='Store cookies in PATH')
 	parser.add_argument('-cookie-file-readonly', action='store_true', help='Set given cookie-store to read-only')
-	parser.add_argument('-force-reload', metavar='SECONDS', help='Force reload in the given interval')
+	parser.add_argument('-force-reload-time', metavar='SECONDS', help='Force reload in the given interval')
+	parser.add_argument('-move', action='store_true', help='Try to "save the screen" by moving the content')
 	parser.add_argument('-verbose', action='store_true', help='Verbose output for debugging')
+	parser.add_argument('-config', metavar='FILE', help='Json config-file. Overrides all parameters! (default: ~/.config/webscreensaver')
 	args = parser.parse_args()
 
 	if args.list:
@@ -294,14 +409,31 @@ if __name__ == "__main__":
 		hack = WebHacks.determine_screensaver(args.choose)
 		url, scripts = hack.url, hack.scripts
 
+	cookie_file = args.cookie_file
+	cookie_file_readonly = args.cookie_file_readonly
+	force_reload_time = int(args.force_reload_time) if args.force_reload_time else None
+	move = args.move
+
+	config_file = args.config if args.config else os.path.expanduser(os.path.join("~", ".config", "webscreensaver"))
+	if os.path.exists(config_file):
+		config_content = open(config_file, "r")
+		config = json.load(config_content, encoding="UTF-8")
+
+		url = config["url"]
+		cookie_file = config.get("cookie_file", cookie_file)
+		cookie_file_readonly = bool(config.get("cookie_file_readonly", cookie_file_readonly))
+		force_reload_time = config.get("force_reload_time", force_reload_time)
+		move = bool(config.get("move", move))
+
 	saver = WebScreensaver(
 		url=url,
 		window_id=WebScreensaver.determine_window_id(args.window_id),
 		scripts=scripts,
-		cookie_file=args.cookie_file,
-		cookie_file_readonly=args.cookie_file_readonly,
-		reload_time=int(args.force_reload) if args.force_reload else None,
-		verbose=bool(args.verbose)
+		cookie_file=cookie_file,
+		cookie_file_readonly=cookie_file_readonly,
+		reload_time=force_reload_time,
+		verbose=bool(args.verbose),
+		move=move
 	)
 	saver.setup()
 

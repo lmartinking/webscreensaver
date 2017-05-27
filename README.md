@@ -35,3 +35,49 @@ You can persist cookies by specifying a cookie file:
 
 *NOTE:* All parameters should be all on the same line as `webscreensaver`
 
+config
+------
+You can create the config file `~/.config/webscreensaver` where you have even more options and you can also arrange _multiple_ web pages.
+e.g.
+```
+{ "move" : true
+, "force_reload_time": 120
+, "cookie_file_readonly": true
+, "cookie_file": "~/.webscreensaver-cookies"
+, "url" : "https://c.xkcd.com/random/comic"
+}
+
+```
+
+or two web pages
+
+```
+{ "move" : true
+, "force_reload_time": 120
+, "cookie_file_readonly": true
+, "cookie_file": "~/.webscreensaver-cookies"
+, "url" : { "vertical": true
+          , "split_percentage": 50
+          , "url1": "https://c.xkcd.com/random/comic/"
+          , "url2": "http://www.nichtlustig.de"
+          }
+}
+```
+
+or even three
+```
+{ "move" : true
+, "force_reload_time": 120
+, "cookie_file_readonly": true
+, "cookie_file": "~/.webscreensaver-cookies"
+, "url" : { "vertical": true
+          , "split_percentage": 50
+          , "url1": { "vertical": false
+                    , "split_percentage": 50
+                    , "url1": "https://c.xkcd.com/random/comic/"
+                    , "url2": "https://en.wikipedia.org"
+                    }
+          , "url2": "http://www.nichtlustig.de"
+          }
+}
+```
