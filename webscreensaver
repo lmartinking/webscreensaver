@@ -12,7 +12,7 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('GdkX11', '3.0')
 gi.require_version('WebKit', '3.0')
 gi.require_version('Soup', '2.4')
-from gi.repository import Gtk, Gdk, GdkX11, GObject, Soup, WebKit
+from gi.repository import Gtk, Gdk, GdkX11, Soup, WebKit, GLib
 
 
 class WebScreensaver(object):
@@ -20,13 +20,21 @@ class WebScreensaver(object):
 	A simple wrapper for WebKit which works as an XScreensaver Hack
 	'''
 
-	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None, cookie_file_readonly=False):
+	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None, cookie_file_readonly=False, reload_time=None, verbose=False):
 		self.window_id = window_id
 		self.scripts = scripts
 		self.url = url
 		self.cookie_file = cookie_file
 		self.cookie_file_readonly = cookie_file_readonly
 
+		self.reload_time = reload_time
+		
+		self.reload_timerID = None
+		self.reload_once = False
+		self._reloading = False
+		
+		self.verbose = verbose
+		
 		self.w = 640
 		self.h = 480
 
@@ -75,6 +83,8 @@ class WebScreensaver(object):
 		self.browser.set_size_request(self.w, self.h)
 
 		self.browser.connect('onload-event', self.handle_on_load)
+		self.browser.connect('load-error', self.load_error)
+		self.browser.connect('resource-load-failed', self.resource_load_failed)
 
 	def setup_cookie_jar(self):
 		if (self.cookie_file):
@@ -88,6 +98,8 @@ class WebScreensaver(object):
 		Handler for browser page load events.
 		This will be executed for every frame within the browser.
 		'''
+		if self.reload_time and (self.reload_timerID is None):
+			self.reload_timerID = GLib.timeout_add_seconds(self.reload_time, self.reload)
 
 		if not self.scripts:
 			return
@@ -95,6 +107,37 @@ class WebScreensaver(object):
 		for script in self.scripts:
 			print("Executing script: {}".format(script))
 			self.browser.execute_script(script)
+		
+	def resource_load_failed(self, web_view, web_frame, uri, web_error):
+		self.load_error(web_view, web_frame, uri, web_error)
+
+	def load_error(self, web_view, web_frame, uri, web_error):
+		if self._reloading:
+			return
+		reload_time = None
+		if self.reload_timerID is None:
+			if self.reload_time:
+				reload_time = self.reload_time
+			else:
+				reload_time = 30 
+				self.reload_once = True
+
+		print("Error with \"{}\": {}".format(uri, web_error))
+		if reload_time:
+			if self.verbose: print(" --> Reloading in {}".format(reload_time))
+			self.reload_timerID = GLib.timeout_add_seconds(reload_time, self.reload)
+
+	def reload(self):
+		if self.verbose: print("Reloading...")
+		self._reloading = True
+		self.browser.reload()
+		self.browser.reload_bypass_cache()
+		self._reloading = False
+		if self.reload_once:
+			self.reload_timerID = None
+			self.reload_once = False
+			return False
+		return True
 
 	def setup_layout(self):
 		'''Make sure the browser can expand without affecting the window'''
@@ -233,6 +276,8 @@ if __name__ == "__main__":
 	parser.add_argument('-list', action='store_true', help='List favourites')
 	parser.add_argument('-cookie-file', metavar='PATH', help='Store cookies in PATH')
 	parser.add_argument('-cookie-file-readonly', action='store_true', help='Set given cookie-store to read-only')
+	parser.add_argument('-force-reload', metavar='SECONDS', help='Force reload in the given interval')
+	parser.add_argument('-verbose', action='store_true', help='Verbose output for debugging')
 	args = parser.parse_args()
 
 	if args.list:
@@ -252,7 +297,9 @@ if __name__ == "__main__":
 		window_id=WebScreensaver.determine_window_id(args.window_id),
 		scripts=scripts,
 		cookie_file=args.cookie_file,
-		cookie_file_readonly=args.cookie_file_readonly
+		cookie_file_readonly=args.cookie_file_readonly,
+		reload_time=int(args.force_reload),
+		verbose=bool(args.verbose)
 	)
 	saver.setup()
 
