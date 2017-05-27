@@ -173,7 +173,9 @@ class WebScreensaver(object):
 			win_id = os.getenv('XSCREENSAVER_WINDOW')
 
 		if win_id:
-			win_id = long(int(win_id, 16))
+			win_id = int(win_id, 16)
+			if sys.version_info.major < 3:
+				win_id = long(win_id)
 
 		return win_id
 
@@ -298,7 +300,7 @@ if __name__ == "__main__":
 		scripts=scripts,
 		cookie_file=args.cookie_file,
 		cookie_file_readonly=args.cookie_file_readonly,
-		reload_time=int(args.force_reload),
+		reload_time=int(args.force_reload) if args.force_reload else None,
 		verbose=bool(args.verbose)
 	)
 	saver.setup()
