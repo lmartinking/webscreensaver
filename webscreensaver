@@ -209,25 +209,25 @@ class WebScreensaver(object):
 			# (bool vertical, int split_percentage, url1, url2)
 			# where those urls can be dictionaries again...
 			
-			vertical = url["vertical"]
+			vertical = url.get("vertical", True)
 			
 			# this is only correct for the first layer!
 			if vertical:
-				split_percentage = ((self.w - self.move_width) * url["split_percentage"])/100
+				split_percentage = ((self.w - self.move_width) * url.get("split_percentage",50))/100
 			else:
-				split_percentage = ((self.h - self.move_height) * url["split_percentage"])/100
+				split_percentage = ((self.h - self.move_height) * url("split_percentage",50))/100
 			url1 = url["url1"]
 			url2 = url["url2"]
 			
 			pane1 = self._get_browser_tree(url1)
 			scroll_pane1 = Gtk.ScrolledWindow()
 			scroll_pane1.add(pane1)
-			scroll_pane1.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL)
+			scroll_pane1.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
 
 			pane2 = self._get_browser_tree(url2)
 			scroll_pane2 = Gtk.ScrolledWindow()
 			scroll_pane2.add(pane2)
-			scroll_pane2.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL)
+			scroll_pane2.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
 						
 			#doc says "they are arranged vertically" means the split is horizontally
 			if vertical:
