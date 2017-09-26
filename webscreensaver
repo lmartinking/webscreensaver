@@ -215,7 +215,7 @@ class WebScreensaver(object):
 			if vertical:
 				split_percentage = ((self.w - self.move_width) * url.get("split_percentage",50))/100
 			else:
-				split_percentage = ((self.h - self.move_height) * url("split_percentage",50))/100
+				split_percentage = ((self.h - self.move_height) * url.get("split_percentage",50))/100
 			url1 = url["url1"]
 			url2 = url["url2"]
 			
