@@ -39,11 +39,12 @@ class WebScreensaver(object):
 	A simple wrapper for WebKit which works as an XScreensaver Hack
 	'''
 
-	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None):
+	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None, disk_cache=True):
 		self.window_id = window_id
 		self.scripts = scripts
 		self.url = url
 		self.cookie_file = cookie_file
+		self.disk_cache = disk_cache
 
 		self.w = 640
 		self.h = 480
@@ -77,12 +78,26 @@ class WebScreensaver(object):
 		'''Sets up WebKit in our window'''
 		self.browser = WebKit.WebView()
 
+		settings = self.browser.get_settings()
+
 		# Try to enable webgl
 		try:
-			settings = self.browser.get_settings()
-			settings.set_property('enable-webgl', True)
+			settings.set_enable_webgl(True)
 		except Exception as err:
 			print("Could not enable WebGL: {}".format(err))
+
+		try:
+			settings.set_enable_accelerated_2d_canvas(True)
+		except Exception as err:
+			print("Could not enable Accelerated 2D Canvas: {}".format(err))
+
+		# Enable disk caching
+		if self.disk_cache:
+			context = self.browser.get_context()
+			data_manager = context.get_website_data_manager()
+
+			context.set_cache_model(WebKit.CacheModel.WEB_BROWSER)
+			print("Cache directory:", data_manager.get_disk_cache_directory())
 
 		# Take a stab at guessing whether we are running in the
 		# XScreensaver preview window...
@@ -257,6 +272,7 @@ if __name__ == "__main__":
 	parser.add_argument('-choose', help='Select a favourite')
 	parser.add_argument('-list', action='store_true', help='List favourites')
 	parser.add_argument('-cookie-file', metavar='PATH', help='Store cookies in PATH')
+	parser.add_argument('-no-cache', action='store_true', help='Disable disk caching of website data')
 	args = parser.parse_args()
 
 	if args.list:
@@ -275,7 +291,8 @@ if __name__ == "__main__":
 		url=url,
 		window_id=WebScreensaver.determine_window_id(args.window_id),
 		scripts=scripts,
-		cookie_file=args.cookie_file
+		cookie_file=args.cookie_file,
+		disk_cache=not args.no_cache
 	)
 	saver.setup()
 
