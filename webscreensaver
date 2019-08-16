@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 """
     WebScreensaver - Make any web page a screensaver
@@ -27,9 +27,11 @@ import signal
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('GdkX11', '3.0')
-gi.require_version('WebKit', '3.0')
+gi.require_version('WebKit2', '4.0')
 gi.require_version('Soup', '2.4')
-from gi.repository import Gtk, Gdk, GdkX11, GObject, Soup, WebKit
+
+from gi.repository import Gtk, Gdk, GdkX11, GObject, Soup
+from gi.repository import WebKit2 as WebKit
 
 
 class WebScreensaver(object):
@@ -80,7 +82,7 @@ class WebScreensaver(object):
 			settings = self.browser.get_settings()
 			settings.set_property('enable-webgl', True)
 		except Exception as err:
-			print "Could not enable WebGL: {}".format(err)
+			print("Could not enable WebGL: {}".format(err))
 
 		# Take a stab at guessing whether we are running in the
 		# XScreensaver preview window...
@@ -90,7 +92,7 @@ class WebScreensaver(object):
 
 		self.browser.set_size_request(self.w, self.h)
 
-		self.browser.connect('onload-event', self.handle_on_load)
+		self.browser.connect('load-changed', self.handle_load_changed)
 
 	def setup_cookie_jar(self):
 		if (self.cookie_file):
@@ -99,7 +101,14 @@ class WebScreensaver(object):
 			session = WebKit.get_default_session()
 			session.add_feature(cookiejar)
 
-	def handle_on_load(self, view, frame, user_data=None):
+	def handle_load_changed(self, view, load_event: WebKit.LoadEvent):
+		print("Load changed:", view, load_event)
+
+		if load_event == WebKit.LoadEvent.FINISHED:
+			self.handle_on_load(view)
+
+
+	def handle_on_load(self, view):
 		'''
 		Handler for browser page load events.
 		This will be executed for every frame within the browser.
@@ -109,8 +118,8 @@ class WebScreensaver(object):
 			return
 
 		for script in self.scripts:
-			print "Executing script: ", script
-			self.browser.execute_script(script)
+			print("Executing script: ", script)
+			self.browser.run_javascript(script, None, None, None)
 
 	def setup_layout(self):
 		'''Make sure the browser can expand without affecting the window'''
@@ -137,7 +146,7 @@ class WebScreensaver(object):
 		self.win.show_all()
 		Gdk.Window.process_all_updates()
 
-		self.browser.open(self.url)
+		self.browser.load_uri(self.url)
 
 	@classmethod
 	def determine_window_id(cls, win_id=None):
@@ -228,7 +237,7 @@ class WebHacks(object):
 	@classmethod
 	def print_list(cls):
 		for hack in cls.hacks:
-			print "%15s\t%s" % (hack.name, hack.url)
+			print("%15s\t%s" % (hack.name, hack.url))
 
 	@classmethod
 	def determine_screensaver(cls, name=None):

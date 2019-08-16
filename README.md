@@ -6,10 +6,10 @@ A screen hack which uses WebKit and works with XScreensaver
 dependencies
 ------------
 
- * python 2.7
+ * python 3
  * xscreensaver
  * GTK3
- * webkitgtk
+ * WebKit2 gtk
 
 install
 -------
