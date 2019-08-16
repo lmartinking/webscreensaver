@@ -111,10 +111,13 @@ class WebScreensaver(object):
 
 	def setup_cookie_jar(self):
 		if (self.cookie_file):
+			context = self.browser.get_context()
+			cookie_manager = context.get_cookie_manager()
+			cookie_manager.set_accept_policy(WebKit.CookieAcceptPolicy.ALWAYS)
+
 			cookiejar = Soup.CookieJarText.new(self.cookie_file, False)
-			cookiejar.set_accept_policy(Soup.CookieJarAcceptPolicy.ALWAYS)
-			session = WebKit.get_default_session()
-			session.add_feature(cookiejar)
+			for cookie in cookiejar.all_cookies():
+				cookie_manager.add_cookie(cookie, None, None, None)
 
 	def handle_load_changed(self, view, load_event: WebKit.LoadEvent):
 		print("Load changed:", view, load_event)
