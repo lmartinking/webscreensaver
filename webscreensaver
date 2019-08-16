@@ -173,7 +173,7 @@ class WebScreensaver(object):
 			win_id = os.getenv('XSCREENSAVER_WINDOW')
 
 		if win_id:
-			win_id = long(int(win_id, 16))
+			win_id = int(win_id, 16)
 
 		return win_id
 
