@@ -39,7 +39,7 @@ class WebScreensaver(object):
 	A simple wrapper for WebKit which works as an XScreensaver Hack
 	'''
 
-	def __init__(self, url='http://www.google.com', window_id=None, scripts=None, cookie_file=None, disk_cache=True):
+	def __init__(self, url='https://www.google.com', window_id=None, scripts=None, cookie_file=None, disk_cache=True):
 		self.window_id = window_id
 		self.scripts = scripts
 		self.url = url
@@ -235,7 +235,7 @@ class WebHacks(object):
 			scripts=[ UserScripts.remove_ids("info") ]
 		),
 		Hack('shadow-map',
-			url='http://alteredqualia.com/three/examples/webgl_shadowmap.html',
+			url='https://alteredqualia.com/three/examples/webgl_shadowmap.html',
 			scripts=[ UserScripts.remove_ids("info") ]
 		),
 		Hack('birds',
@@ -243,12 +243,12 @@ class WebHacks(object):
 			scripts=[ UserScripts.remove_ids("info"), UserScripts.remove_ids("container") ]
 		),
 
-		Hack('gimme-shiny',		url='http://gimmeshiny.com/?seconds=30'),
+		Hack('gimme-shiny',		url='https://gimmeshiny.com/?seconds=30'),
 		Hack('cell-shader',		url='http://www.ro.me/tech/demos/6/index.html'),
-		Hack('kinect',			url='http://mrdoob.com/lab/javascript/webgl/kinect/'),
+		Hack('kinect',			url='https://mrdoob.com/lab/javascript/webgl/kinect/'),
 		Hack('conductor',		url='http://www.mta.me/'),
 
-		Hack('flying-toasters',	url='http://bryanbraun.github.io/after-dark-css/all/flying-toasters.html'),
+		Hack('flying-toasters',	url='https://bryanbraun.github.io/after-dark-css/all/flying-toasters.html'),
 	)
 
 	@classmethod
