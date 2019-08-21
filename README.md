@@ -1,18 +1,24 @@
 webscreensaver
 ==============
 
-A screen hack which uses WebKit and works with XScreensaver.
+A screen hack which uses WebKit and works with XScreensaver or XFCE.
 
 Dependencies
 ------------
 
  * Python 3
- * xscreensaver
+ * xscreensaver or xfce4-screensaver
  * GTK3
  * WebKit2 gtk
 
-Install
--------
+On Ubuntu, try this command:
+
+```
+    sudo apt install python3 python3-gi gir1.2-webkit2-4.0 gir1.2-gtk-3.0
+```
+
+Install (XScreensaver)
+----------------------
 
 Copy `webscreensaver` into `/usr/lib/xscreensaver` and then edit `~/.xscreensaver`:
 
@@ -36,3 +42,10 @@ You can persist cookies by specifying a cookie file:
 ```
 
 *NOTE:* All parameters should be all on the same line as `webscreensaver`
+
+Install (XFCE)
+--------------
+
+ 1. Copy `webscreensaver` into `/usr/lib/xscreensaver`.
+ 2. Copy `webscreensaver.desktop` into `/usr/share/applications/screensavers`.
+
