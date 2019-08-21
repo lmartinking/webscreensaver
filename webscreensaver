@@ -245,10 +245,6 @@ class WebHacks(object):
 			url='https://alteredqualia.com/three/examples/webgl_shadowmap.html',
 			scripts=[ UserScripts.remove_ids("info") ]
 		),
-		Hack('birds',
-			url='https://threejs.org/examples/webgl_gpgpu_birds.html',
-			scripts=[ UserScripts.remove_ids("info"), UserScripts.remove_ids("container") ]
-		),
 
 		Hack('sechelt',
 			url='https://mixedreality.mozilla.org/sechelt/',
