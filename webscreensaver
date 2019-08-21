@@ -209,6 +209,17 @@ class UserScripts(object):
 		'''
 		return script % tag
 
+	@classmethod
+	def inject_css(cls, css_str):
+		script = '''
+			(function() {
+				var node = document.createElement('style');
+				node.innerHTML = "%s";
+				document.body.appendChild(node);
+			})();
+		'''
+		return script % css_str
+
 
 class WebHacks(object):
 	'''
