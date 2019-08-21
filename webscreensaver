@@ -254,6 +254,24 @@ class WebHacks(object):
 			scripts=[ UserScripts.remove_ids("info"), UserScripts.remove_ids("container") ]
 		),
 
+		Hack('sechelt',
+			url='https://mixedreality.mozilla.org/sechelt/',
+			scripts=[ UserScripts.remove_ids("enterVr") ]
+		),
+
+		Hack('cyber-auroras',
+			url='https://js1k.com/2018-coins/demo/3076',
+			scripts=[
+				UserScripts.remove_tags("header"),
+				UserScripts.inject_css("iframe { padding: 0 !important; } body { background: black; }")
+			]
+		),
+
+		Hack('jellyfish',
+			url='https://akirodic.com/p/jellyfish/',
+			scripts=[ UserScripts.inject_css("#console { display: none; }") ]
+		),
+
 		Hack('gimme-shiny',		url='https://gimmeshiny.com/?seconds=30'),
 		Hack('cell-shader',		url='http://www.ro.me/tech/demos/6/index.html'),
 		Hack('kinect',			url='https://mrdoob.com/lab/javascript/webgl/kinect/'),
