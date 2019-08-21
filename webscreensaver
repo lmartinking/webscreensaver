@@ -162,7 +162,6 @@ class WebScreensaver(object):
 		signal.signal(signal.SIGTERM, terminate)
 
 		self.win.show_all()
-		Gdk.Window.process_all_updates()
 
 		self.browser.load_uri(self.url)
 
