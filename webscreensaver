@@ -239,7 +239,7 @@ class WebHacks(object):
 			scripts=[ UserScripts.remove_ids("info") ]
 		),
 		Hack('birds',
-			url='http://mrdoob.github.com/three.js/examples/canvas_geometry_birds.html',
+			url='https://threejs.org/examples/webgl_gpgpu_birds.html',
 			scripts=[ UserScripts.remove_ids("info"), UserScripts.remove_ids("container") ]
 		),
 
