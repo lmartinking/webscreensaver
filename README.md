@@ -71,3 +71,12 @@ a single string or a list of strings.
  * `inject_css`  - the CSS string will be injected into the page.
  * `remove_tags` - all tags matching the specified tag name will be removed.
  * `remove_ids`  - all tags with the specified IDs will be removed.
+
+Cycling
+-------
+
+If you set your screensaver settings to "cycle", you should use
+`-cycle` which will pick the next screensaver in the list each time
+WebScreensaver is run. (Cycling is implemented in XScreensaver by stopping
+the current screensaver program and starting another one -- even in the
+case of a single screensaver being selected.)
