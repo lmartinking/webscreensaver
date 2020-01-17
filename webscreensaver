@@ -278,6 +278,49 @@ class WebHacks(object):
 			print("%15s\t%s" % (hack.name, hack.url))
 
 	@classmethod
+	def load_from_file(cls, file_path):
+		try:
+			import toml
+		except ImportError:
+			raise Exception("Could not import `toml`, you probably need to install it via `pip install toml`")
+
+		cfg = toml.load(open(file_path, 'r'))
+
+		hacks = [
+			cls.hack_from_config(site, section) for
+			(site, section) in cfg.items()
+		]
+
+		cls.hacks = [h for h in hacks if h]
+
+	@classmethod
+	def hack_from_config(cls, site, section):
+		if 'url' not in section:
+			print(f"Error: `url` not found in section for site `{site}`. Skipping.")
+			return
+
+		action_map = {
+			'inject_css': UserScripts.inject_css,
+			'remove_ids': UserScripts.remove_ids,
+			'remove_tags': UserScripts.remove_tags,
+		}
+
+		url = section['url']
+
+		actions = section.keys() & action_map.keys()
+
+		scripts = []
+		for act in actions:
+			params = section[act]
+			if not isinstance(params, list):
+				params = [params]
+			for param in params:
+				script = action_map[act](param)
+				scripts.append(script)
+
+		return WebHacks.Hack(name=site, url=url, scripts=scripts)
+
+	@classmethod
 	def determine_screensaver(cls, name=None):
 		for hack in cls.hacks:
 			if hack.name == name:
@@ -294,9 +337,13 @@ if __name__ == "__main__":
 	parser.add_argument('-url', help='URL of page to display')
 	parser.add_argument('-choose', help='Select a favourite')
 	parser.add_argument('-list', action='store_true', help='List favourites')
+	parser.add_argument('-sites-list', type=str, help='List of sites to use instead of built-in list')
 	parser.add_argument('-cookie-file', metavar='PATH', help='Store cookies in PATH')
 	parser.add_argument('-no-cache', action='store_true', help='Disable disk caching of website data')
 	args = parser.parse_args()
+
+	if args.sites_list:
+		WebHacks.load_from_file(args.sites_list)
 
 	if args.list:
 		WebHacks.print_list()
