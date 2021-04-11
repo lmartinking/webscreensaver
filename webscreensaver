@@ -235,8 +235,8 @@ class WebHacks(object):
 			scripts=[ UserScripts.remove_tags("iframe") ]
 		),
 		Hack('reactive-ball',
-			url='http://lab.aerotwist.com/webgl/reactive-ball/',
-			scripts=[ UserScripts.remove_ids("msg") ]
+			url='https://web.archive.org/web/20181207122336/lab.aerotwist.com/webgl/reactive-ball/',
+			scripts=[ UserScripts.remove_ids("msg") , UserScripts.remove_ids("wm-ipp-base") ]
 		),
 		Hack('hatching-glow',
 			url='http://www.ro.me/tech/demos/1/index.html',
