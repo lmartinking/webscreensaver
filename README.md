@@ -20,6 +20,8 @@ On Ubuntu, try this command:
 Install (XScreensaver)
 ----------------------
 
+Copy `webscreenaver.xml` into `/usr/share/xscreensaver/config/`.
+
 Copy `webscreensaver` into `/usr/lib/xscreensaver` and then edit `~/.xscreensaver`:
 
 ```
@@ -47,7 +49,8 @@ Install (XFCE)
 --------------
 
  1. Copy `webscreensaver` into `/usr/lib/xscreensaver`.
- 2. Copy `webscreensaver.desktop` into `/usr/share/applications/screensavers`.
+ 2. Copy `webscreenaver.xml` into `/usr/share/xscreensaver/config`.
+ 3. Copy `webscreensaver.desktop` into `/usr/share/applications/screensavers`.
 
 Sites List
 ----------

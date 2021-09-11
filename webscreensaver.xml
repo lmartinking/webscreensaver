@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<screensaver name="webscreensaver" _label="WebScreenSaver">
+
+  <select id="choose">
+    <option id="choose-random" _label="Random favourite"/>
+    <option id="choose-starfield" _label="starfield" arg-set="-choose starfield"/>
+    <option id="choose-reactive-ball" _label="reactive-ball" arg-set="-choose reactive-ball"/>
+    <option id="choose-hatching-glow" _label="hatching-glow" arg-set="-choose hatching-glow"/>
+    <option id="choose-shadow-map" _label="shadow-map" arg-set="-choose shadow-map"/>
+    <option id="choose-sechelt" _label="sechelt" arg-set="-choose sechelt"/>
+    <option id="choose-cyber-auroras" _label="cyber-auroras" arg-set="-choose cyber-auroras"/>
+    <option id="choose-jellyfish" _label="jellyfish" arg-set="-choose jellyfish"/>
+    <option id="choose-gimme-shiny" _label="gimme-shiny" arg-set="-choose gimme-shiny"/>
+    <option id="choose-cell-shader" _label="cell-shader" arg-set="-choose cell-shader"/>
+    <option id="choose-kinect" _label="kinect" arg-set="-choose kinect"/>
+    <option id="choose-conductor" _label="conductor" arg-set="-choose conductor"/>
+    <option id="choose-flying-toasters" _label="flying-toasters" arg-set="-choose flying-toasters"/>
+  </select>
+
+  <xscreensaver-updater />
+
+  <_description>
+WebScreenSaver: Use any web page (or pages) as your screensaver.
+
+https://github.com/lmartinking/webscreensaver
+  </_description>
+</screensaver>
