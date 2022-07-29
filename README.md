@@ -80,3 +80,10 @@ If you set your screensaver settings to "cycle", you should use
 WebScreensaver is run. (Cycling is implemented in XScreensaver by stopping
 the current screensaver program and starting another one -- even in the
 case of a single screensaver being selected.)
+
+3rd Party Packages
+------------------
+
+You can install webscreensaver easily using these packages (unsupported):
+
+ * Arch Linux (AUR) - `webscreensaver-git` - https://aur.archlinux.org/packages/webscreensaver-git
