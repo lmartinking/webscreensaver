@@ -3,6 +3,8 @@ webscreensaver
 
 A screen hack which uses WebKit and works with XScreensaver or XFCE.
 
+**NOTE:** If you are using Wayland this is unlikely to work. Wayland does not support XScreensaver.
+
 Dependencies
 ------------
 
