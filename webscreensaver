@@ -86,11 +86,6 @@ class WebScreensaver(object):
 		except Exception as err:
 			print("Could not enable WebGL: {}".format(err))
 
-		try:
-			settings.set_enable_accelerated_2d_canvas(True)
-		except Exception as err:
-			print("Could not enable Accelerated 2D Canvas: {}".format(err))
-
 		# Enable disk caching
 		if self.disk_cache:
 			context = self.browser.get_context()
