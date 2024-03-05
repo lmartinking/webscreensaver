@@ -90,9 +90,8 @@ class WebScreensaver(object):
 		if self.disk_cache:
 			context = self.browser.get_context()
 			data_manager = context.get_website_data_manager()
-
 			context.set_cache_model(WebKit.CacheModel.WEB_BROWSER)
-			print("Cache directory:", data_manager.get_disk_cache_directory())
+			print("Cache directory:", data_manager.props.disk_cache_directory)
 
 		# Take a stab at guessing whether we are running in the
 		# XScreensaver preview window...
