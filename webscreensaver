@@ -86,18 +86,12 @@ class WebScreensaver(object):
 		except Exception as err:
 			print("Could not enable WebGL: {}".format(err))
 
-		try:
-			settings.set_enable_accelerated_2d_canvas(True)
-		except Exception as err:
-			print("Could not enable Accelerated 2D Canvas: {}".format(err))
-
 		# Enable disk caching
 		if self.disk_cache:
 			context = self.browser.get_context()
 			data_manager = context.get_website_data_manager()
-
 			context.set_cache_model(WebKit.CacheModel.WEB_BROWSER)
-			print("Cache directory:", data_manager.get_disk_cache_directory())
+			print("Cache directory:", data_manager.props.disk_cache_directory)
 
 		# Take a stab at guessing whether we are running in the
 		# XScreensaver preview window...
