@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=WebScreenSaver
 Comment=Display a web page as your screenaver
-Exec=/usr/lib/xscreensaver/webscreensaver
-TryExec=/usr/lib/xscreensaver/webscreensaver
+Exec=/usr/libexec/xscreensaver/webscreensaver
+TryExec=/usr/libexec/xscreensaver/webscreensaver
 StartupNotify=false
 Terminal=false
 Type=Application
