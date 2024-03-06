@@ -24,7 +24,7 @@ On Ubuntu, try this command:
 Install (XScreensaver)
 ----------------------
 
-Copy `webscreensaver` into `/usr/lib/xscreensaver` and then edit `~/.xscreensaver`:
+Copy `webscreensaver` into `/usr/libexec/xscreensaver` (or `/usr/lib/screensaver` on some systems) and then edit `~/.xscreensaver`:
 
 ```
     programs:
