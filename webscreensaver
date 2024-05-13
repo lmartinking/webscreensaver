@@ -361,6 +361,7 @@ if __name__ == "__main__":
 	import argparse
 	parser = argparse.ArgumentParser(description='WebScreensaver: Run a web page as your screensaver')
 	parser.add_argument('-window-id', help='XID of Window to draw on')
+	parser.add_argument('--window-id', help='XID of Window to draw on')  # Some XScreensaver versions use this
 	parser.add_argument('-url', help='URL of page to display')
 	parser.add_argument('-choose', help='Select a favourite')
 	parser.add_argument('-cycle', action='store_true', help='Cycle to the next creensaver from the list (each time when run)')
