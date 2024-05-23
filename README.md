@@ -15,10 +15,10 @@ Dependencies
  * GTK3
  * WebKit2 gtk
 
-On Ubuntu, try this command:
+On Debian/Ubuntu, try this command:
 
 ```
-    sudo apt install python3 python3-gi gir1.2-webkit2-4.0 gir1.2-gtk-3.0
+    sudo apt install python3 python3-gi gir1.2-webkit2-4.1 gir1.2-gtk-3.0
 ```
 
 Install (XScreensaver)
